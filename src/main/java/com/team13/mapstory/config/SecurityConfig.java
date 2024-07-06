@@ -1,8 +1,8 @@
 package com.team13.mapstory.config;
 
 import com.team13.mapstory.jwt.JWTFilter;
+import com.team13.mapstory.oauth2.CustomSuccessHandler;
 import com.team13.mapstory.service.CustomOAuth2UserService;
-import com.team13.mapstory.service.oauth2.CustomSuccessHandler;
 import com.team13.mapstory.jwt.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
