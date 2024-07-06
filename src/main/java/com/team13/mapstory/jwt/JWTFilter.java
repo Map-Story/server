@@ -1,7 +1,8 @@
 package com.team13.mapstory.jwt;
 
+import com.team13.mapstory.dto.CustomOAuth2User;
 import com.team13.mapstory.dto.UserDTO;
-import com.team13.mapstory.service.oauth2.NaverOAuth2User;
+import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -13,15 +14,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException,  IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, java.io.IOException {
         String requestUri = request.getRequestURI();
 
         if (requestUri.matches("^\\/login(?:\\/.*)?$")) {
@@ -34,12 +33,16 @@ public class JWTFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+        if (requestUri.equals("/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         //cookie들을 불러온 뒤 Authorization Key에 담긴 쿠키를 찾음
         String authorization = null;
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
 
-            System.out.println(cookie.getName());
+            System.out.println(cookie.getName()+" filter");
             if (cookie.getName().equals("Authorization")) {
 
                 authorization = cookie.getValue();
@@ -75,14 +78,14 @@ public class JWTFilter extends OncePerRequestFilter {
 
         //userDTO를 생성하여 값 set
         UserDTO userDTO = new UserDTO();
-        userDTO.setUsername(username);
+        userDTO.setNickname(username);
         userDTO.setRole(role);
 
         //UserDetails에 회원 정보 객체 담기
-        NaverOAuth2User naverOAuth2User = new NaverOAuth2User(userDTO);
+        CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
 
         //스프링 시큐리티 인증 토큰 생성
-        Authentication authToken = new UsernamePasswordAuthenticationToken(naverOAuth2User, null, naverOAuth2User.getAuthorities());
+        Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
         //세션에 사용자 등록
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
