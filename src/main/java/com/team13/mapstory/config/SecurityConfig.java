@@ -1,5 +1,6 @@
 package com.team13.mapstory.config;
 
+import com.team13.mapstory.filter.TokenExceptionFilter;
 import com.team13.mapstory.jwt.JWTFilter;
 import com.team13.mapstory.oauth2.CustomSuccessHandler;
 import com.team13.mapstory.service.CustomOAuth2UserService;
@@ -14,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -82,7 +84,8 @@ public class SecurityConfig {
 
         //JWTFilter 추가
         http
-                .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
+                .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new TokenExceptionFilter(),JWTFilter.class);
 
         return http.build();
     }
