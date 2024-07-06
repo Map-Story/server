@@ -1,7 +1,5 @@
-package com.team13.mapstory.service.oauth2;
+package com.team13.mapstory.dto;
 
-import com.team13.mapstory.dto.UserDTO;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -9,11 +7,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-@RequiredArgsConstructor
-public class NaverOAuth2User implements OAuth2User {
+public class CustomOAuth2User implements OAuth2User {
 
     private final UserDTO userDTO;
 
+    public CustomOAuth2User(UserDTO userDTO) {
+
+        this.userDTO = userDTO;
+    }
 
     @Override
     public Map<String, Object> getAttributes() {
@@ -31,7 +32,7 @@ public class NaverOAuth2User implements OAuth2User {
             @Override
             public String getAuthority() {
 
-                return userDTO.getRole();
+                return "USER";
             }
         });
 
@@ -41,11 +42,11 @@ public class NaverOAuth2User implements OAuth2User {
     @Override
     public String getName() {
 
-        return userDTO.getName();
+        return userDTO.getNickname();
     }
 
-    public String getUsername() {
+    public String getProfileImage() {
 
-        return userDTO.getUsername();
+        return userDTO.getProfileimage();
     }
 }

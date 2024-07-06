@@ -1,7 +1,8 @@
 package com.team13.mapstory.dto;
 
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
 public class NaverResponse implements OAuth2Response{
 
     private final Map<String, Object> attribute;
@@ -12,21 +13,23 @@ public class NaverResponse implements OAuth2Response{
 
     @Override
     public String getProvider() {
+
         return "naver";
     }
 
     @Override
     public String getProviderId() {
+
         return attribute.get("id").toString();
     }
 
     @Override
-    public String getEmail() {
-        return attribute.get("email").toString();
+    public String getProfileImage() {
+        return attribute.get("profile_image").toString();
     }
 
     @Override
-    public String getName() {
+    public String getNickName() {
         return attribute.get("name").toString();
     }
 }

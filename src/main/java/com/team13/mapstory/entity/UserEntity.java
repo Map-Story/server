@@ -1,8 +1,13 @@
 package com.team13.mapstory.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -12,16 +17,15 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String username; // 예시에 있어서 일단 넣어봄
-    private String name;
-    private String email;
-    private String role;
-
+    private String nickname;
     private String profileimage;
     private String logintype;
     private String loginid;
     private String uid;
-    private String refreshToken; // 없어야 할것 같기도?
+    private String refreshToken;
+
+    public UserEntity() {
+        this.uid = UUID.randomUUID().toString();
+    }
 
 }
