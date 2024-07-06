@@ -1,13 +1,8 @@
 package com.team13.mapstory.service;
 
-import com.team13.mapstory.dto.KakaoResponse;
-import com.team13.mapstory.dto.NaverResponse;
-import com.team13.mapstory.dto.OAuth2Response;
-import com.team13.mapstory.dto.UserDTO;
+import com.team13.mapstory.dto.*;
 import com.team13.mapstory.entity.UserEntity;
 import com.team13.mapstory.repository.UserRepository;
-import com.team13.mapstory.service.oauth2.KakaoOAuth2User;
-import com.team13.mapstory.service.oauth2.NaverOAuth2User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -23,56 +18,59 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        System.out.println("loaduser 동작");
+
         OAuth2User oAuth2User = super.loadUser(userRequest);
+
         System.out.println(oAuth2User);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         OAuth2Response oAuth2Response = null;
-        if (registrationId.equals("naver")) {
+        if (registrationId.equals("kakao")) {
 
-            oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
-        }
-        else if (registrationId.equals("kakao")) {
             oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
+        }
+        else if (registrationId.equals("google")) {
+
+            oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
         }
         else {
 
             return null;
         }
-        String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
-        UserEntity existData = userRepository.findByUsername(username);
+
+        //리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
+        String loginId = oAuth2Response.getProviderId();
+        UserEntity existData = userRepository.findByLoginid(loginId);
+
 
         if (existData == null) {
 
             UserEntity userEntity = new UserEntity();
-            userEntity.setUsername(username);
-            userEntity.setEmail(oAuth2Response.getEmail());
-            userEntity.setName(oAuth2Response.getName());
-            userEntity.setRole("ROLE_USER");
+            userEntity.setLogintype(oAuth2Response.getProvider());
+            userEntity.setLoginid(loginId);
+            userEntity.setNickname(oAuth2Response.getNickName());
+            userEntity.setProfileimage(oAuth2Response.getProfileImage());
 
             userRepository.save(userEntity);
 
             UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(username);
-            userDTO.setName(oAuth2Response.getName());
-            userDTO.setRole("ROLE_USER");
+            userDTO.setNickname(oAuth2Response.getNickName());
+            userDTO.setProfileimage(oAuth2Response.getProfileImage());
 
-            return new NaverOAuth2User(userDTO);
+            return new CustomOAuth2User(userDTO);
         }
         else {
 
-            existData.setEmail(oAuth2Response.getEmail());
-            existData.setName(oAuth2Response.getName());
+            existData.setProfileimage(oAuth2Response.getProfileImage());
+            existData.setNickname(oAuth2Response.getNickName());
 
             userRepository.save(existData);
 
             UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(existData.getUsername());
-            userDTO.setName(oAuth2Response.getName());
-            userDTO.setRole(existData.getRole());
+            userDTO.setNickname(oAuth2Response.getNickName());
+            userDTO.setProfileimage(oAuth2Response.getProfileImage());
 
-            return new NaverOAuth2User(userDTO);
+            return new CustomOAuth2User(userDTO);
         }
     }
 }
