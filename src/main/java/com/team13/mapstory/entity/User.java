@@ -1,6 +1,5 @@
 package com.team13.mapstory.entity;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -9,10 +8,10 @@ import lombok.Setter;
 
 import java.util.UUID;
 
-@Entity
+@jakarta.persistence.Entity
 @Getter
 @Setter
-public class UserEntity {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +23,7 @@ public class UserEntity {
     private String uid;
     private String refreshToken;
 
-    public UserEntity() {
+    public User() {
         this.uid = UUID.randomUUID().toString();
     }
 
