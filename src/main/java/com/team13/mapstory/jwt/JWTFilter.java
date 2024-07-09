@@ -22,9 +22,7 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, java.io.IOException {
         String requestUri = request.getRequestURI();
-        System.out.println("requestUri: " + requestUri);
         if (requestUri.matches("^\\/login(?:\\/.*)?$")) {
-            System.out.println("login 경로라고 인지함");
             filterChain.doFilter(request, response);
             return;
         }
@@ -56,10 +54,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         //Authorization 헤더 검증
         if (authorization == null) {
-
-            System.out.println("token null");
             filterChain.doFilter(request, response);
-
             //조건이 해당되면 메소드 종료 (필수)
             return;
         }
