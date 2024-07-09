@@ -1,7 +1,7 @@
 package com.team13.mapstory.service;
 
 import com.team13.mapstory.dto.*;
-import com.team13.mapstory.entity.UserEntity;
+import com.team13.mapstory.entity.User;
 import com.team13.mapstory.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -40,22 +40,23 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         //리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
         String loginId = oAuth2Response.getProviderId();
-        UserEntity existData = userRepository.findByLoginid(loginId);
+        User existData = userRepository.findByLoginid(loginId);
 
 
         if (existData == null) {
 
-            UserEntity userEntity = new UserEntity();
-            userEntity.setLogintype(oAuth2Response.getProvider());
-            userEntity.setLoginid(loginId);
-            userEntity.setNickname(oAuth2Response.getNickName());
-            userEntity.setProfileimage(oAuth2Response.getProfileImage());
+            User user = new User();
+            user.setLogintype(oAuth2Response.getProvider());
+            user.setLoginid(loginId);
+            user.setNickname(oAuth2Response.getNickName());
+            user.setProfileimage(oAuth2Response.getProfileImage());
 
-            userRepository.save(userEntity);
+            userRepository.save(user);
 
             UserDTO userDTO = new UserDTO();
             userDTO.setNickname(oAuth2Response.getNickName());
             userDTO.setProfileimage(oAuth2Response.getProfileImage());
+            userDTO.setLoginId(loginId);
 
             return new CustomOAuth2User(userDTO);
         }
@@ -69,6 +70,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             UserDTO userDTO = new UserDTO();
             userDTO.setNickname(oAuth2Response.getNickName());
             userDTO.setProfileimage(oAuth2Response.getProfileImage());
+            userDTO.setLoginId(loginId);
 
             return new CustomOAuth2User(userDTO);
         }

@@ -1,6 +1,8 @@
 package com.team13.mapstory.jwt;
 
-import io.jsonwebtoken.Jwts;
+import com.team13.mapstory.entity.User;
+import com.team13.mapstory.repository.UserRepository;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -21,36 +23,91 @@ import java.util.Date;
 public class JWTUtil {
 
     private SecretKey secretKey;
+    private UserRepository userRepository;
 
-    public JWTUtil(@Value("${spring.jwt.secret}")String secret) {
-
+    public JWTUtil(@Value("${spring.jwt.secret}")String secret, UserRepository userRepository) {
 
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+
+        this.userRepository = userRepository;
     }
 
-    public String getUsername(String token) {
+    public String getNickName(String token) {
 
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
+        Claims claims = parseClaims(token);
+        String nickname = claims.get("nickname", String.class);
+        return nickname;
     }
 
     public String getRole(String token) {
+        Claims claims = parseClaims(token);
+        String role = claims.get("role", String.class);
+        return role;
+    }
 
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
+    public String getLoginId(String token) {
+        Claims claims = parseClaims(token);
+        String loginId = claims.get("loginId", String.class);
+        return loginId;
     }
 
     public Boolean isExpired(String token) {
-
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+         Claims claims = parseClaims(token);
+         return claims.getExpiration().before(new Date());
     }
 
-    public String createJwt(String username, String role, Long expiredMs) {
+    private Claims parseClaims(String token) {
+        try {
+            return Jwts.parser().verifyWith(secretKey).build()
+                    .parseSignedClaims(token).getPayload();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        } catch (MalformedJwtException e) {
+            System.out.println("MalformedJwtException");
+            return null;
+        } catch (SecurityException e) {
+            System.out.println("SecurityException");
+            return null;
+        }
+    }
+
+    public String createJwt(String nickname, String role, String loginId, Long expiredMs) {
 
         return Jwts.builder()
-                .claim("username", username)
+                .claim("nickname", nickname)
                 .claim("role", role)
+                .claim("loginId",loginId)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey)
                 .compact();
     }
+
+    public String generateRefreshToken(String accessToken) {
+        String nickname = getNickName(accessToken);
+        String role = getRole(accessToken);
+        String loginId = getLoginId(accessToken);
+        String refeshToken = createJwt(nickname,role,loginId,86400000L);
+        User user = userRepository.findByLoginid(loginId);
+        user.setRefreshToken(refeshToken);
+        userRepository.save(user);
+
+        return refeshToken;
+    }
+
+    public String refreshAccessToken(String refreshToken, String accessToken) {
+        String nickName = getNickName(accessToken);
+        String role = getRole(accessToken);
+        String loginId = getLoginId(accessToken);
+        User user = userRepository.findByLoginid(loginId);
+        if(user.getRefreshToken().equals(refreshToken)){
+            if(!isExpired(refreshToken)) {
+                String refreshedAccessToken = createJwt(nickName,role,loginId,60*60*60L);
+                return refreshedAccessToken;
+            }
+        }
+        return null;
+    }
+
+
 }

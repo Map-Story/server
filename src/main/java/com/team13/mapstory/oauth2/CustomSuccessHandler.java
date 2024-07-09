@@ -3,7 +3,6 @@ package com.team13.mapstory.oauth2;
 import com.team13.mapstory.dto.CustomOAuth2User;
 import com.team13.mapstory.jwt.JWTUtil;
 import io.jsonwebtoken.io.IOException;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,16 +27,20 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
-        String username = customUserDetails.getName();
+        String nickName = customUserDetails.getName();
+        String loginId = customUserDetails.getLoginId();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String token = jwtUtil.createJwt(username, role, 60*60*60L);
+
+        String token = jwtUtil.createJwt(nickName, role, loginId,60*60*60L );
+        String refreshToken = jwtUtil.generateRefreshToken(token);
 
         response.addCookie(createCookie("Authorization", token));
+        response.addCookie(createCookie("RefreshToken", refreshToken));
         response.sendRedirect("http://localhost:3000/");
     }
 
@@ -45,7 +48,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(60*60*60);
-        //cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
 

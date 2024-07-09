@@ -22,7 +22,6 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, java.io.IOException {
         String requestUri = request.getRequestURI();
-
         if (requestUri.matches("^\\/login(?:\\/.*)?$")) {
 
             filterChain.doFilter(request, response);
@@ -39,13 +38,15 @@ public class JWTFilter extends OncePerRequestFilter {
         }
         //cookie들을 불러온 뒤 Authorization Key에 담긴 쿠키를 찾음
         String authorization = null;
+        String refreshToken = null;
+
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
-
-            System.out.println(cookie.getName()+" filter");
             if (cookie.getName().equals("Authorization")) {
-
                 authorization = cookie.getValue();
+            }
+            if (cookie.getName().equals("RefreshToken")) {
+                refreshToken = cookie.getValue();
             }
         }
 
@@ -62,18 +63,27 @@ public class JWTFilter extends OncePerRequestFilter {
         //토큰
         String token = authorization;
 
-        //토큰 소멸 시간 검증
+        // 엑세스 토큰 소멸 시간 검증
         if (jwtUtil.isExpired(token)) {
-
-            System.out.println("token expired");
-            filterChain.doFilter(request, response);
-
-            //조건이 해당되면 메소드 종료 (필수)
-            return;
+//            리프레시 토큰 소멸 시간 검증
+            if(!jwtUtil.isExpired(refreshToken)){
+                if(refreshToken != null){
+//                  유효한 리프레시 토큰 일때
+                    authorization = jwtUtil.refreshAccessToken(refreshToken,authorization);
+                    Cookie cookie = new Cookie("Authorization", authorization);
+                    cookie.setMaxAge(60*60*60);
+                    cookie.setPath("/");
+                    cookie.setHttpOnly(true);
+                    response.addCookie(cookie);
+                }
+            }else{
+                filterChain.doFilter(request, response);
+                return;
+            }
         }
 
         //토큰에서 username과 role 획득
-        String username = jwtUtil.getUsername(token);
+        String username = jwtUtil.getNickName(token);
         String role = jwtUtil.getRole(token);
 
         //userDTO를 생성하여 값 set
