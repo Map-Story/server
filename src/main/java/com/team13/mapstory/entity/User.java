@@ -1,8 +1,13 @@
 package com.team13.mapstory.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -12,24 +17,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String nickname;
+    private String profileimage;
+    private String logintype;
+    private String loginid;
+    private String uid;
+    private String refreshToken;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private String email;
-
-    private String profile_image;
-
-    @Column(nullable = false)
-    private String login_type;
-
-    @Column(nullable = false)
-    private String login_id;
-
-    @Column(nullable = false)
-    private String user_code;
-
-    @Column(nullable = false)
-    private String refresh_token;
+    public User() {
+        this.uid = UUID.randomUUID().toString();
+    }
 }

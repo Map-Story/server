@@ -12,7 +12,6 @@ import com.team13.mapstory.dto.location.AddressDTO;
 import com.team13.mapstory.dto.post.RequestPost;
 import com.team13.mapstory.dto.post.UploadPostDTO;
 import com.team13.mapstory.entity.Image;
-import com.team13.mapstory.entity.Location;
 import com.team13.mapstory.entity.Post;
 import com.team13.mapstory.entity.User;
 import com.team13.mapstory.repository.ImageRepository;
@@ -54,9 +53,9 @@ public class PostService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public List<Post> getAllPosts(String nickname) {
+    public List<Post> getAllPosts(String loginId) {
 
-        Optional<User> optionalUser = userRepository.findByUser_code(nickname);
+        Optional<User> optionalUser = userRepository.findByLoginid(loginId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
@@ -68,11 +67,11 @@ public class PostService {
         return null;
     }
 
-    public Post getPostById(Long id, String nickname) {
+    public Post getPostById(Long id, String loginId) {
 
         User user = null;
 
-        Optional<User> optionalUser = userRepository.findByUser_code(nickname);
+        Optional<User> optionalUser = userRepository.findByLoginid(loginId);
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
         }
@@ -268,9 +267,9 @@ public class PostService {
         return null;
     }
 
-    public boolean uploadPost(UploadPostDTO uploadPostDTO, String username) throws IOException {
+    public boolean uploadPost(UploadPostDTO uploadPostDTO, String loginId) throws IOException {
 
-        Optional<User> optionalUser = userRepository.findByUser_code(username);
+        Optional<User> optionalUser = userRepository.findByLoginid(loginId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
@@ -330,11 +329,11 @@ public class PostService {
         }
     }
 
-    public boolean updatePost(Long id, UploadPostDTO uploadPostDTO, String nickname) throws IOException {
+    public boolean updatePost(Long id, UploadPostDTO uploadPostDTO, String loginId) throws IOException {
 
         User user = null;
 
-        Optional<User> optionalUser = userRepository.findByUser_code(nickname);
+        Optional<User> optionalUser = userRepository.findByLoginid(loginId);
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
         }
@@ -346,7 +345,7 @@ public class PostService {
 
         if (post.getUser() != user) return false;
 
-        // 만약 사진이 교체되었다면? 과거 이미지 S3에서 삭제
+        // 만약 메인 사진이 교체되었다면? 과거 이미지 S3에서 삭제
         String previousImageUrl = post.getImage();
         String imageUrl = uploadPostDTO.getImageUrl();
 
@@ -354,6 +353,11 @@ public class PostService {
             deleteImage(previousImageUrl);
             post.setImage(imageUrl);
         }
+
+        // 메인 사진 말고 다른 사진이 교체되었다면?
+        List<MultipartFile> images = uploadPostDTO.getMultipartFiles(); // 새로운 사진
+// TODO:
+
 
         post.setLatitude(uploadPostDTO.getLatitude());
         post.setLongitude(uploadPostDTO.getLongitude());
@@ -372,13 +376,15 @@ public class PostService {
         } catch (Exception e) {
             return false;
         }
+
+
     }
 
-    public boolean deletePost(Long id, String nickname) throws IOException {
+    public boolean deletePost(Long id, String loginId) throws IOException {
 
         User user = null;
 
-        Optional<User> optionalUser = userRepository.findByUser_code(nickname);
+        Optional<User> optionalUser = userRepository.findByLoginid(loginId);
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
         }
