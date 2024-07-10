@@ -17,7 +17,7 @@ public class Post {
     private Long id;
 
     @Column(nullable = false)
-    @Schema(description = "이미지 URL 주소", example = "https://map-story-team13.s3.ap-northeast-2.amazonaws.com/d5aaba88-4690-42cc-8f92-ec200253ad0b_aws.png")
+    @Schema(description = "대표 이미지 URL 주소", example = "https://map-story-team13.s3.ap-northeast-2.amazonaws.com/d5aaba88-4690-42cc-8f92-ec200253ad0b_aws.png")
     private String image;
 
     @Column(nullable = false)

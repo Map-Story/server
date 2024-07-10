@@ -60,7 +60,7 @@ public class PostController {
         } return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
-    // 이미지 정보 추출
+    // 대표 이미지 정보 추출
     @Operation(summary = "이미지 정보 추출", description = "이미지를 form-data 형식으로 등록하여 사진 찍은 날짜, 위치 정보, S3에 업로드 한 주소 받아오기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "이미지 정보 추출에 성공했습니다.", content = @Content(schema = @Schema(implementation = Test.class))),
@@ -90,7 +90,7 @@ public class PostController {
             @ApiResponse(responseCode = "400", description = "게시물 등록에 실패했습니다.", content = @Content(schema = @Schema(type = "String"))),
     })
     @PostMapping("/")
-    public ResponseEntity<String> uploadDetail(@RequestBody UploadPostDTO uploadPostDTO, @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+    public ResponseEntity<String> uploadDetail(@ModelAttribute UploadPostDTO uploadPostDTO, @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         if (postService.uploadPost(uploadPostDTO, customOAuth2User.getName())) {
             return ResponseEntity.status(HttpStatus.CREATED).body("게시물 등록 성공");
         } return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("게시물 등록 실패");

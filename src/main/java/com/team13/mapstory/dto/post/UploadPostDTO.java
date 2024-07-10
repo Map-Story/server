@@ -3,15 +3,20 @@ package com.team13.mapstory.dto.post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
 public class UploadPostDTO {
 
-    @Schema(description = "S3에 저장된 이미지 URL", example = "https://map-story-team13.s3.ap-northeast-2.amazonaws.com/d5aaba88-4690-42cc-8f92-ec200253ad0b_aws.png")
+    @Schema(description = "S3에 저장된 대표 이미지 URL", example = "https://map-story-team13.s3.ap-northeast-2.amazonaws.com/d5aaba88-4690-42cc-8f92-ec200253ad0b_aws.png")
     private String imageUrl;
+
+    @Schema(description = "여러 장의 이미지 파일")
+    private List<MultipartFile> multipartFiles;
 
     @Schema(description = "위도", example = "37.120504389769825")
     private double latitude;

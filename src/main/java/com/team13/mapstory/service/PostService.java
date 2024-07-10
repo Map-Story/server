@@ -11,8 +11,11 @@ import com.drew.metadata.png.PngDirectory;
 import com.team13.mapstory.dto.location.AddressDTO;
 import com.team13.mapstory.dto.post.RequestPost;
 import com.team13.mapstory.dto.post.UploadPostDTO;
+import com.team13.mapstory.entity.Image;
+import com.team13.mapstory.entity.Location;
 import com.team13.mapstory.entity.Post;
 import com.team13.mapstory.entity.User;
+import com.team13.mapstory.repository.ImageRepository;
 import com.team13.mapstory.repository.PostRepository;
 import com.team13.mapstory.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +40,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class PostService {
 
+    private final ImageRepository imageRepository;
     @Value("${naver-map-api.client-id}")
     private String naverMapClientId;
 
@@ -182,6 +186,26 @@ public class PostService {
         return null;
     }
 
+    // 순수하게 S3에만 올리기
+    private List<String> uploadImageS3(List<MultipartFile> images) throws IOException {
+
+        List<String> imageUrls = new ArrayList<>();
+
+        for (MultipartFile image : images) {
+
+            String fileName = generateFileName(image);
+
+            if (!isImageFile(fileName)) {
+                throw new IllegalArgumentException("이미지 파일이 아닙니다.");
+            }
+
+            s3Client.putObject(bucket, fileName, image.getInputStream(), new ObjectMetadata());
+
+            imageUrls.add(s3Client.getUrl(bucket, fileName).toString());
+        }
+        return imageUrls;
+    }
+
     private AddressDTO naverReverseGeocoding(double latitude, double longitude) {
 
         AddressDTO addressDTO = new AddressDTO();
@@ -244,7 +268,7 @@ public class PostService {
         return null;
     }
 
-    public boolean uploadPost(UploadPostDTO uploadPostDTO, String username) {
+    public boolean uploadPost(UploadPostDTO uploadPostDTO, String username) throws IOException {
 
         Optional<User> optionalUser = userRepository.findByUser_code(username);
         if (optionalUser.isPresent()) {
@@ -252,8 +276,9 @@ public class PostService {
 
             double latitude = uploadPostDTO.getLatitude();
             double longitude = uploadPostDTO.getLongitude();
+            List<MultipartFile> images = uploadPostDTO.getMultipartFiles();
             LocalDateTime dateTime = uploadPostDTO.getUploadTime();
-            String imageUrl = uploadPostDTO.getImageUrl();
+            String mainImageUrl = uploadPostDTO.getImageUrl();
             String content = uploadPostDTO.getContent();
             String category = uploadPostDTO.getCategory();
             String emotion = uploadPostDTO.getEmotion();
@@ -261,8 +286,10 @@ public class PostService {
             String weather = uploadPostDTO.getWeather();
             String isPublic = uploadPostDTO.getIsPublic();
 
+            List<String> imageUrls = uploadImageS3(images);
+
             Post post = new Post();
-            post.setImage(imageUrl);
+            post.setImage(mainImageUrl);
             post.setLatitude(latitude);
             post.setLongitude(longitude);
             post.setUpload_time(dateTime);
@@ -274,15 +301,22 @@ public class PostService {
             post.setIs_public(isPublic);
             post.setUser(user);
 
-            try {
-                postRepository.save(post);
-                return true;
-            } catch (Exception e) {
-                return false;
+            Post savePost = postRepository.save(post);
+
+            for (String imageUrl : imageUrls) {
+                Image image = new Image();
+                image.setPost(savePost);
+                image.setImageUrl(imageUrl);
+
+                try {
+                    imageRepository.save(image);
+                } catch (Exception e) {
+                    return false;
+                }
             }
         }
 
-        return false;
+        return true;
     }
 
     // 링크 기반 삭제
