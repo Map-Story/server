@@ -1,9 +1,9 @@
 package com.team13.mapstory.controller;
 
+import com.team13.mapstory.dto.CustomOAuth2User;
 import com.team13.mapstory.dto.post.RequestPost;
 import com.team13.mapstory.dto.post.UploadPostDTO;
 import com.team13.mapstory.entity.Post;
-import com.team13.mapstory.entity.Test;
 import com.team13.mapstory.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,7 +50,6 @@ public class PostController {
     // TODO : 사용자가 동일한 지 확인하는 것 추가하기
     @Operation(summary = "테스트 조회", description = "입력한아 이디의 게시물 상세 조회하기")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "게시물 조회에 성공했습니다.", content = @Content(schema = @Schema(implementation = Test.class))),
             @ApiResponse(responseCode = "404", description = "게시물 조회에 실패했습니다."),
     })
     @GetMapping("/{id}")
@@ -63,7 +63,6 @@ public class PostController {
     // 대표 이미지 정보 추출
     @Operation(summary = "이미지 정보 추출", description = "이미지를 form-data 형식으로 등록하여 사진 찍은 날짜, 위치 정보, S3에 업로드 한 주소 받아오기")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "이미지 정보 추출에 성공했습니다.", content = @Content(schema = @Schema(implementation = Test.class))),
             @ApiResponse(responseCode = "400", description = "게시물 조회에 실패했습니다."),
     })
     @PostMapping("/image")
@@ -90,7 +89,7 @@ public class PostController {
             @ApiResponse(responseCode = "400", description = "게시물 등록에 실패했습니다.", content = @Content(schema = @Schema(type = "String"))),
     })
     @PostMapping("/")
-    public ResponseEntity<String> uploadDetail(@ModelAttribute UploadPostDTO uploadPostDTO, @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+    public ResponseEntity<String> uploadDetail(@ModelAttribute UploadPostDTO uploadPostDTO, @AuthenticationPrincipal CustomOAuth2User customOAuth2User) throws IOException {
         if (postService.uploadPost(uploadPostDTO, customOAuth2User.getName())) {
             return ResponseEntity.status(HttpStatus.CREATED).body("게시물 등록 성공");
         } return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("게시물 등록 실패");

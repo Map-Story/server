@@ -12,7 +12,6 @@ import com.team13.mapstory.dto.location.AddressDTO;
 import com.team13.mapstory.dto.post.RequestPost;
 import com.team13.mapstory.dto.post.UploadPostDTO;
 import com.team13.mapstory.entity.Image;
-import com.team13.mapstory.entity.Location;
 import com.team13.mapstory.entity.Post;
 import com.team13.mapstory.entity.User;
 import com.team13.mapstory.repository.ImageRepository;
@@ -56,7 +55,7 @@ public class PostService {
 
     public List<Post> getAllPosts(String nickname) {
 
-        Optional<User> optionalUser = userRepository.findByUser_code(nickname);
+        Optional<User> optionalUser = userRepository.findByNickname(nickname);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
@@ -72,7 +71,7 @@ public class PostService {
 
         User user = null;
 
-        Optional<User> optionalUser = userRepository.findByUser_code(nickname);
+        Optional<User> optionalUser = userRepository.findByNickname(nickname);
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
         }
@@ -270,7 +269,7 @@ public class PostService {
 
     public boolean uploadPost(UploadPostDTO uploadPostDTO, String username) throws IOException {
 
-        Optional<User> optionalUser = userRepository.findByUser_code(username);
+        Optional<User> optionalUser = userRepository.findByNickname(username);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
@@ -334,7 +333,7 @@ public class PostService {
 
         User user = null;
 
-        Optional<User> optionalUser = userRepository.findByUser_code(nickname);
+        Optional<User> optionalUser = userRepository.findByNickname(nickname);
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
         }
@@ -378,7 +377,7 @@ public class PostService {
 
         User user = null;
 
-        Optional<User> optionalUser = userRepository.findByUser_code(nickname);
+        Optional<User> optionalUser = userRepository.findByNickname(nickname);
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
         }
