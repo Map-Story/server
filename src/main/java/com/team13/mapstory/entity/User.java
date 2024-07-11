@@ -27,4 +27,5 @@ public class User {
     public User() {
         this.uid = UUID.randomUUID().toString();
     }
+
 }
