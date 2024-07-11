@@ -1,6 +1,5 @@
 package com.team13.mapstory.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,15 +7,25 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @Getter
 @Setter
-public class Test {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
+    private String nickname;
+    private String profileimage;
+    private String logintype;
+    private String loginid;
+    private String uid;
+    private String refreshToken;
 
-    @Schema(description = "이름", defaultValue = "홍길동")
-    private String name;
+    public User() {
+        this.uid = UUID.randomUUID().toString();
+    }
+
 }
