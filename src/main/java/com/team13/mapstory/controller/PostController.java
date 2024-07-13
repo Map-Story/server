@@ -4,6 +4,7 @@ import com.team13.mapstory.dto.CustomOAuth2User;
 import com.team13.mapstory.dto.post.RequestPost;
 import com.team13.mapstory.dto.post.UploadPostDTO;
 import com.team13.mapstory.entity.Post;
+import com.team13.mapstory.jwt.JWTUtil;
 import com.team13.mapstory.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -29,6 +30,7 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final JWTUtil jwtUtil;
 
     // 게시물 조회 (전체)
     // TODO : 사용자가 동일한 지 확인하는 것 추가하기 (자기것은 비공개도 불러오고, 친구라면 친구만 허용도 불러오고, 전체공개라면 모두 불러오기)
@@ -39,8 +41,8 @@ public class PostController {
             @ApiResponse(responseCode = "404", description = "등록된 게시물이 없습니다."),
     })
     @GetMapping("/")
-    public ResponseEntity<List<Post>> getAllPosts(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        List<Post> posts = postService.getAllPosts(customOAuth2User.getLoginId());
+    public ResponseEntity<List<Post>> getAllPosts(@CookieValue(value = "Authorization") String token) {
+        List<Post> posts = postService.getAllPosts(jwtUtil.getLoginId(token));
         if (posts != null) {
             return ResponseEntity.status(HttpStatus.OK).body(posts);
         } return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -54,8 +56,8 @@ public class PostController {
             @ApiResponse(responseCode = "404", description = "게시물 조회에 실패했습니다."),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Post> getPostById(@PathVariable Long id, @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        Post post = postService.getPostById(id, customOAuth2User.getLoginId());
+    public ResponseEntity<Post> getPostById(@PathVariable Long id, @CookieValue(value = "Authorization") String token) {
+        Post post = postService.getPostById(id, jwtUtil.getLoginId(token));
         if (post != null) {
             return ResponseEntity.status(HttpStatus.OK).body(post);
         } return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -91,8 +93,8 @@ public class PostController {
             @ApiResponse(responseCode = "400", description = "게시물 등록에 실패했습니다.", content = @Content(schema = @Schema(type = "String"))),
     })
     @PostMapping("/")
-    public ResponseEntity<String> uploadPost(@ModelAttribute UploadPostDTO uploadPostDTO, @AuthenticationPrincipal CustomOAuth2User customOAuth2User) throws IOException {
-        if (postService.uploadPost(uploadPostDTO, customOAuth2User.getLoginId())) {
+    public ResponseEntity<String> uploadPost(@ModelAttribute UploadPostDTO uploadPostDTO, @CookieValue(value = "Authorization") String token) throws IOException {
+        if (postService.uploadPost(uploadPostDTO, jwtUtil.getLoginId(token))) {
             return ResponseEntity.status(HttpStatus.CREATED).body("게시물 등록 성공");
         } return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("게시물 등록 실패");
     }
@@ -106,8 +108,8 @@ public class PostController {
             @ApiResponse(responseCode = "400", description = "게시물 수정에 실패했습니다.", content = @Content(schema = @Schema(type = "String"))),
     })
     @PutMapping("/{id}")
-    public ResponseEntity<String> updatePost(@PathVariable Long id, @RequestBody UploadPostDTO uploadPostDTO, @AuthenticationPrincipal CustomOAuth2User customOAuth2User) throws IOException {
-        if (postService.updatePost(id, uploadPostDTO, customOAuth2User.getName())) {
+    public ResponseEntity<String> updatePost(@PathVariable Long id, @RequestBody UploadPostDTO uploadPostDTO, @CookieValue(value = "Authorization") String token) throws IOException {
+        if (postService.updatePost(id, uploadPostDTO, jwtUtil.getLoginId(token))) {
             return ResponseEntity.status(HttpStatus.OK).body("게시물 수정 성공");
         } return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("게시물 수정 실패");
     }
@@ -120,8 +122,8 @@ public class PostController {
             @ApiResponse(responseCode = "400", description = "게시물 삭제에 실패했습니다.", content = @Content(schema = @Schema(type = "String"))),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePost(@PathVariable Long id, @AuthenticationPrincipal CustomOAuth2User customOAuth2User) throws IOException {
-        if (postService.deletePost(id, customOAuth2User.getName())) {
+    public ResponseEntity<String> deletePost(@PathVariable Long id, @CookieValue(value = "Authorization") String token) throws IOException {
+        if (postService.deletePost(id, jwtUtil.getLoginId(token))) {
             return ResponseEntity.status(HttpStatus.OK).body("게시물 삭제 성공");
         } return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("게시물 삭제 실패");
     }

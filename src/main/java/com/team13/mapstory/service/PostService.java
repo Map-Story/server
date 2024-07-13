@@ -293,11 +293,10 @@ public class PostService {
             post.setLongitude(longitude);
             post.setUpload_time(dateTime);
             post.setContent(content);
-            post.setCategory(category);
-            post.setEmotion(emotion);
-            post.setPerson(person);
-            post.setWeather(weather);
-            post.setIs_public(isPublic);
+            //post.setCategory(category);
+            //post.setEmotion(emotion);
+            //post.setPerson(person);
+            //post.setIs_public(isPublic);
             post.setUser(user);
 
             Post savePost = postRepository.save(post);
@@ -363,11 +362,10 @@ public class PostService {
         post.setLongitude(uploadPostDTO.getLongitude());
         post.setUpload_time(uploadPostDTO.getUploadTime());
         post.setContent(uploadPostDTO.getContent());
-        post.setCategory(uploadPostDTO.getCategory());
-        post.setEmotion(uploadPostDTO.getEmotion());
-        post.setPerson(uploadPostDTO.getPerson());
-        post.setWeather(uploadPostDTO.getWeather());
-        post.setIs_public(uploadPostDTO.getIsPublic());
+        //post.setCategory(uploadPostDTO.getCategory());
+        //post.setEmotion(uploadPostDTO.getEmotion());
+        //post.setPerson(uploadPostDTO.getPerson());
+        //post.setIs_public(uploadPostDTO.getIsPublic());
         post.setUser(user);
 
         try {

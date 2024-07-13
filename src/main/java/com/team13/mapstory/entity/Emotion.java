@@ -14,7 +14,7 @@ public class Emotion {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
     // 행복, 슬픔, 우울함, 스트레스, 화남, 졸림, 나른, 무감정, 답답, 억울, 불쾌함, 예민
@@ -30,5 +30,20 @@ public class Emotion {
     private boolean frustrated;
     private boolean innocent;
     private boolean unpleasant;
-    private boolean sensitive;
+    private boolean sensitivity;
+
+    public Emotion() {
+        this.happy = false;
+        this.sad = false;
+        this.depressed = false;
+        this.stress = false;
+        this.angry = false;
+        this.sleepy = false;
+        this.drowsy = false;
+        this.apathy = false;
+        this.frustrated = false;
+        this.innocent = false;
+        this.unpleasant = false;
+        this.sensitivity = false;
+    }
 }

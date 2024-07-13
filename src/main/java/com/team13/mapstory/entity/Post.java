@@ -1,5 +1,9 @@
 package com.team13.mapstory.entity;
 
+import com.team13.mapstory.entity.enums.CategoryEnum;
+import com.team13.mapstory.entity.enums.EmotionEnum;
+import com.team13.mapstory.entity.enums.IsPublicEnum;
+import com.team13.mapstory.entity.enums.PersonEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -24,9 +28,9 @@ public class Post {
     @Schema(description = "사진 찍은 시간 (없을 시에 업로드 시간)", example = "2024-07-04T12:33:27")
     private LocalDateTime upload_time;
 
-    @ManyToOne
-    @JoinColumn(name = "locate_id", referencedColumnName = "id", nullable = false)
-    private Location location;
+//    @ManyToOne
+//    @JoinColumn(name = "locate_id", referencedColumnName = "id", nullable = false)
+//    private Location location;
 
     @Column(nullable = false)
     private double latitude;
@@ -34,21 +38,26 @@ public class Post {
     @Column(nullable = false)
     private double longitude;
 
-    private String category;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CategoryEnum category;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
-    private String emotion;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EmotionEnum emotion;
 
-    private String person;
-
-    private String weather;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PersonEnum personEnum;
 
     @Column(nullable = false)
     private String content;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String is_public;
+    private IsPublicEnum is_public;
 }

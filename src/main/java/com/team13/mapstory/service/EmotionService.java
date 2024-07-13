@@ -50,7 +50,7 @@ public class EmotionService {
             emotion.setFrustrated(frustrated);
             emotion.setInnocent(innocent);
             emotion.setUnpleasant(unpleasant);
-            emotion.setSensitive(sensitive);
+            emotion.setSensitivity(sensitive);
 
             emotionRepository.save(emotion);
             return true;
@@ -92,7 +92,7 @@ public class EmotionService {
                 emotion.setFrustrated(frustrated);
                 emotion.setInnocent(innocent);
                 emotion.setUnpleasant(unpleasant);
-                emotion.setSensitive(sensitive);
+                emotion.setSensitivity(sensitive);
 
                 emotionRepository.save(emotion);
                 return true;
@@ -112,7 +112,7 @@ public class EmotionService {
                 emotion.setFrustrated(frustrated);
                 emotion.setInnocent(innocent);
                 emotion.setUnpleasant(unpleasant);
-                emotion.setSensitive(sensitive);
+                emotion.setSensitivity(sensitive);
 
                 emotionRepository.save(emotion);
                 return true;
@@ -144,7 +144,7 @@ public class EmotionService {
                 emotionResponse.setFrustrated(emotion.isFrustrated());
                 emotionResponse.setInnocent(emotion.isInnocent());
                 emotionResponse.setUnpleasant(emotion.isUnpleasant());
-                emotionResponse.setSensitive(emotion.isSensitive());
+                emotionResponse.setSensitive(emotion.isSensitivity());
                 return emotionResponse;
             }
         }

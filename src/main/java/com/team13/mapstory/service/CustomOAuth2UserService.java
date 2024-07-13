@@ -1,7 +1,9 @@
 package com.team13.mapstory.service;
 
 import com.team13.mapstory.dto.*;
+import com.team13.mapstory.entity.Emotion;
 import com.team13.mapstory.entity.User;
+import com.team13.mapstory.repository.EmotionRepository;
 import com.team13.mapstory.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -17,6 +19,7 @@ import java.util.Optional;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
+    private final EmotionRepository emotionRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
