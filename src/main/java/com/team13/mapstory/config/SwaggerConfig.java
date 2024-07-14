@@ -16,7 +16,7 @@ public class SwaggerConfig {
     private Info info() {
         return new Info()
                 .title("MapStory API")
-                .description("MapStory API 테스트")
+                .description("MapStory API 테스트<br> 쿠키 값을 기반으로 유저 정보를 파악하여 처리 [Swagger API에서는 편의를 위해 쿠키 정보를 입력하는 것을 제거함]")
                 .version("1.0.0");
     }
 
