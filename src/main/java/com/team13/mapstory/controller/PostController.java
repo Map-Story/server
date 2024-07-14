@@ -29,9 +29,6 @@ public class PostController {
     private final PostService postService;
     private final JWTUtil jwtUtil;
 
-    // 게시물 조회 (전체)
-    // TODO : 사용자가 동일한 지 확인하는 것 추가하기 (자기것은 비공개도 불러오고, 친구라면 친구만 허용도 불러오고, 전체공개라면 모두 불러오기)
-    // TODO : 만약, 특정 개수를 정해서 불러온다면 무슨 기준을 통해 불러올지도 정해야 할듯? (거리? 최근에 올린 글?)
     @Operation(summary = "글 목록 조회", description = "글 목록을 페이징네이션 없이 전체 불러옴")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "게시물 조회에 성공했습니다.", content = @Content(array = @ArraySchema(schema = @Schema(implementation = GetsPostResponse.class)))),
@@ -46,7 +43,6 @@ public class PostController {
     }
 
     // 게시물 조회 (1건)
-    // TODO : 사용자가 동일한 지 확인하는 것 추가하기
     @Operation(summary = "게시물 조회", description = "입력한아 아이디의 게시물 상세 조회하기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "게시물 조회에 성공했습니다.", content = @Content(schema = @Schema(implementation = GetPostResponse.class))),
@@ -61,7 +57,7 @@ public class PostController {
     }
 
     // 대표 이미지 정보 추출
-    @Operation(summary = "이미지 정보 추출", description = "이미지를 form-data 형식으로 등록하여 사진 찍은 날짜, 위치 정보, S3에 업로드 한 주소 받아오기")
+    @Operation(summary = "이미지 정보 추출", description = "이미지를 form-data 형식으로 등록하여 사진 찍은 날짜, 위치 정보, S3에 업로드 한 Url 받아오기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "이미지 정보 추출에 성공했습니다.", content = @Content(schema = @Schema(implementation = PostResponse.class))),
             @ApiResponse(responseCode = "400", description = "게시물 조회에 실패했습니다."),

@@ -57,6 +57,9 @@ public class PostService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    @Value("${aws.default.image.post}")
+    private String defaultPostImage;
+
     public List<GetsPostResponse> getAllPosts(String loginId) {
 
         List<GetsPostResponse> getsPostResponse = new ArrayList<>();
@@ -319,6 +322,10 @@ public class PostService {
     // 순수하게 S3에만 올리기
     public List<String> uploadImageS3(List<MultipartFile> images) throws IOException {
 
+        if (images == null) {
+            return null;
+        }
+
         List<String> imageUrls = new ArrayList<>();
 
         for (MultipartFile image : images) {
@@ -351,6 +358,10 @@ public class PostService {
             EmotionEnum emotion = uploadPostDTO.getEmotion();
             PersonEnum person = uploadPostDTO.getPerson();
             IsPublicEnum isPublic = uploadPostDTO.getIsPublic();
+
+            if (mainImageUrl == null) {
+                mainImageUrl = defaultPostImage;
+            }
 
             Post post = new Post();
             post.setImage(mainImageUrl);
@@ -389,6 +400,11 @@ public class PostService {
 
     // 링크 기반 삭제 (1건)
     private void deleteImage(String image) throws IOException {
+
+        if (image.equals(defaultPostImage)) {
+            return;
+        }
+
         try {
             URL url = new URL(image);
             String fileName = url.getPath().substring(url.getPath().lastIndexOf("/") + 1);
