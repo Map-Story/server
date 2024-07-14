@@ -28,13 +28,16 @@ public class Post {
     @Schema(description = "사진 찍은 시간 (없을 시에 업로드 시간)", example = "2024-07-04T12:33:27")
     private LocalDateTime upload_time;
 
+    // 사용자가 수정한 정확한 위치 사용
 //    @ManyToOne
 //    @JoinColumn(name = "locate_id", referencedColumnName = "id", nullable = false)
 //    private Location location;
 
+    // 사용자가 수정한 정확한 좌표 사용
     @Column(nullable = false)
     private double latitude;
 
+    // 사용자가 수정한 정확한 좌표 사용
     @Column(nullable = false)
     private double longitude;
 
@@ -52,7 +55,7 @@ public class Post {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PersonEnum personEnum;
+    private PersonEnum person;
 
     @Column(nullable = false)
     private String content;

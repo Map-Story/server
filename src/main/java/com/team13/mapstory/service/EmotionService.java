@@ -121,7 +121,6 @@ public class EmotionService {
         return false;
     }
 
-
     public EmotionResponse getEmotion(String loginId) {
 
         Optional<User> optionalUser = userRepository.findByLoginid(loginId);
@@ -145,6 +144,7 @@ public class EmotionService {
                 emotionResponse.setInnocent(emotion.isInnocent());
                 emotionResponse.setUnpleasant(emotion.isUnpleasant());
                 emotionResponse.setSensitive(emotion.isSensitivity());
+
                 return emotionResponse;
             }
         }

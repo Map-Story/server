@@ -1,11 +1,11 @@
-package com.team13.mapstory.dto.category;
+package com.team13.mapstory.entity.only;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CategoryResponse {
+public class CategoryOnly {
 
     private boolean restaurant;
     private boolean cafe;

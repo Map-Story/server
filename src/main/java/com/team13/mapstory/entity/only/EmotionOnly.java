@@ -1,10 +1,11 @@
-package com.team13.mapstory.dto.emotion;
+package com.team13.mapstory.entity.only;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
-public class EmotionResponse {
+public class EmotionOnly {
 
     private boolean happy;
     private boolean sad;
@@ -17,5 +18,5 @@ public class EmotionResponse {
     private boolean frustrated;
     private boolean innocent;
     private boolean unpleasant;
-    private boolean sensitive;
+    private boolean sensitivity;
 }
