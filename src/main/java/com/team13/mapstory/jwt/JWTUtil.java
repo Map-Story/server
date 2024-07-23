@@ -5,6 +5,7 @@ import com.team13.mapstory.repository.UserRepository;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -99,6 +100,7 @@ public class JWTUtil {
         return refeshToken;
     }
 
+    @Transactional
     public String refreshAccessToken(String refreshToken, String accessToken) {
         String nickName = getNickName(accessToken);
         String role = getRole(accessToken);

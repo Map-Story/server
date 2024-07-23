@@ -69,6 +69,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 if(refreshToken != null){
 //                  유효한 리프레시 토큰 일때
                     authorization = jwtUtil.refreshAccessToken(refreshToken,authorization);
+                    System.out.println("access token :"+authorization);
                     Cookie cookie = new Cookie("Authorization", authorization);
                     cookie.setMaxAge(60*60*60);
                     cookie.setPath("/");
@@ -84,10 +85,12 @@ public class JWTFilter extends OncePerRequestFilter {
         //토큰에서 username과 role 획득
         String username = jwtUtil.getNickName(token);
         String role = jwtUtil.getRole(token);
+        String loginId = jwtUtil.getLoginId(token);
 
         //userDTO를 생성하여 값 set
         UserDTO userDTO = new UserDTO();
         userDTO.setNickname(username);
+        userDTO.setLoginId(loginId);
         userDTO.setRole(role);
 
         //UserDetails에 회원 정보 객체 담기
