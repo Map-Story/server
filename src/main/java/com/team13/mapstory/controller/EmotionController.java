@@ -28,7 +28,7 @@ public class EmotionController {
     // 감정 불러오기
     @Operation(summary = "감정 설정 불러오기", description = "사용자가 선택한 감정 리스트를 가져옴")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "감정 불러오기에 실패했습니다.", content = @Content(schema = @Schema(type = "String"))),
+            @ApiResponse(responseCode = "200", description = "감정 불러오기에 성공했습니다.", content = @Content(schema = @Schema(type = "String"))),
             @ApiResponse(responseCode = "400", description = "감정 불러오기에 실패했습니다.", content = @Content(schema = @Schema(type = "String"))),
     })
     @GetMapping("/")

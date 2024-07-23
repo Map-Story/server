@@ -45,7 +45,7 @@ public class PostController {
     }
 
     // 게시물 조회 (1건)
-    @Operation(summary = "게시물 조회", description = "입력한아 아이디의 게시물 상세 조회하기")
+    @Operation(summary = "게시물 조회", description = "입력한 아이디의 게시물 상세 조회하기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "게시물 조회에 성공했습니다.", content = @Content(schema = @Schema(implementation = GetPostResponse.class))),
             @ApiResponse(responseCode = "404", description = "게시물 조회에 실패했습니다."),
