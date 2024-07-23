@@ -11,7 +11,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-    private final String AUTH_TOKEN_HEADER = "Authorization";
+    private final String AUTH_TOKEN_COOKIE = "Authorization";
+    private final String REFRESH_TOKEN_COOKIE = "RefreshToken";
 
     private Info info() {
         return new Info()
@@ -24,12 +25,20 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .info(info())
-                .addSecurityItem(new SecurityRequirement().addList(AUTH_TOKEN_HEADER))
+                .addSecurityItem(new SecurityRequirement().addList(AUTH_TOKEN_COOKIE).addList(REFRESH_TOKEN_COOKIE))
                 .components(new Components()
-                        .addSecuritySchemes(AUTH_TOKEN_HEADER, new SecurityScheme()
-                                .name(AUTH_TOKEN_HEADER)
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("Bearer"))
+                        .addSecuritySchemes(AUTH_TOKEN_COOKIE, new SecurityScheme()
+                                .name(AUTH_TOKEN_COOKIE)
+                                .type(SecurityScheme.Type.APIKEY)
+                                .in(SecurityScheme.In.COOKIE)
+                                .name(AUTH_TOKEN_COOKIE)
+                                .description("JWT Token in Authorization cookie"))
+                        .addSecuritySchemes(REFRESH_TOKEN_COOKIE, new SecurityScheme()
+                                .name(REFRESH_TOKEN_COOKIE)
+                                .type(SecurityScheme.Type.APIKEY)
+                                .in(SecurityScheme.In.COOKIE)
+                                .name(REFRESH_TOKEN_COOKIE)
+                                .description("Refresh Token in refreshToken cookie"))
                 );
     }
 }
